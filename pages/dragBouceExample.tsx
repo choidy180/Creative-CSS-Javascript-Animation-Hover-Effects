@@ -5,6 +5,10 @@ import Box from '../components/boundary/box';
 import Container from '../components/container';
 import { inrange } from '../utils';
 
+export const isTouchScreen =
+    typeof window !== 'undefined' 
+    && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
 export default function DragBouceExample() {
     const boundaryRef = React.useRef<HTMLDivElement>(null);
     const boxRef = React.useRef<HTMLDivElement>(null);
@@ -56,6 +60,20 @@ export default function DragBouceExample() {
                         };
                         document.addEventListener('mousemove', mouseMoveHandler);
                         document.addEventListener('mouseup', mouseUpHandler, { once: true });
+                    }}
+                    onTouchStart={(touchEvent)=>{
+                        const touchMoveHandler = (moveEvent: TouchEvent) => {
+                            setPosition({
+                                x: moveEvent.touches[0].pageX - touchEvent.touches[0].pageX,
+                                y: moveEvent.touches[0].pageY - touchEvent.touches[0].pageY,
+                            });
+                        };
+                        const touchEndHandler = () => {
+                            document.removeEventListener('touchmove', touchMoveHandler);
+                        };
+                        document.addEventListener('touchmove', touchMoveHandler);
+                        document.addEventListener('touchend', touchEndHandler, { once: true });
+
                     }}
                 >
                     <Box ref={boxRef}/>
